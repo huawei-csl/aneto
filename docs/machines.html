@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aneto calibrations</title>
+<meta name="description" content="The machines calibrated for the Aneto paper, with their identity, run conditions, counters and accuracy.">
+<link rel="canonical" href="https://huawei-csl.github.io/aneto/machines.html">
+<meta property="og:url" content="https://huawei-csl.github.io/aneto/machines.html">
+<meta property="og:title" content="Aneto calibrations">
+<meta property="og:description" content="The machines calibrated for the Aneto paper, with their identity, run conditions, counters and accuracy.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="assets/img/aneto-mark.svg">
+<link rel="stylesheet" href="assets/style.css">
+<script type="module" src="assets/machines.js"></script>
+</head>
+<body>
+
+<nav class="sitenav" aria-label="Site"><div class="in">
+  <a class="home" href="index.html">Aneto</a>
+  <div class="links">
+    <a href="machines.html" aria-current="page">Machines</a>
+    <a href="demo.html">Demo</a>
+    <a href="https://arxiv.org/abs/2608.07179">Paper</a>
+  </div>
+</div></nav>
+
+<main class="doc wide">
+<noscript><p class="noscript">This list needs JavaScript.</p></noscript>
+<div class="pagehead">
+  <h1>Calibrations</h1>
+  <p>The calibrations come from the measurement data of the paper's artifact, for five CPUs and three simulator configurations. The paper tested each calibration on its own machine.</p>
+</div>
+<p id="summary"></p>
+<div class="machines" id="machines"></div>
+<p class="muted small-note">The errors are leave-one-out (LOO). Aneto predicts each workload from a regression fitted without it and without the other phases of its benchmark. Each error compares this prediction with the ground-truth fit of the workload at the target latency. Below the unloaded latency of a machine (DDR5 on most of them), these values can differ from Figure 5 of the paper. These values use the true factor, so they differ from the figure by up to 0.4 percentage points.</p>
+</main>
+
+<footer>
+  <p>Huawei Technologies, Zurich  |  IEEE/ACM MICRO 2026</p>
+  <p class="muted">&copy; 2026 Huawei Technologies Switzerland AG. All rights reserved. Calibration data: from the aneto-ae artifact, CC-BY-4.0.</p>
+</footer>
+</body>
+</html>

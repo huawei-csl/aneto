@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aneto demo</title>
+<meta name="description" content="The full Aneto demo: the regression, the supply and demand curves, and the CPI error on every machine, in your browser.">
+<link rel="canonical" href="https://huawei-csl.github.io/aneto/demo.html">
+<meta property="og:url" content="https://huawei-csl.github.io/aneto/demo.html">
+<meta property="og:title" content="Aneto demo">
+<meta property="og:description" content="The full Aneto demo: the regression, the supply and demand curves, and the CPI error on every machine, in your browser.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/svg+xml" href="assets/img/aneto-mark.svg">
+<link rel="preload" href="assets/fonts/lmsans10-regular.otf" as="font" type="font/otf" crossorigin>
+<link rel="stylesheet" href="assets/style.css">
+<script type="module" src="assets/demo.js"></script>
+</head>
+<body>
+
+<nav class="sitenav" aria-label="Site"><div class="in">
+  <a class="home" href="index.html">Aneto</a>
+  <div class="links">
+    <a href="machines.html">Machines</a>
+    <a href="demo.html" aria-current="page">Demo</a>
+    <a href="https://arxiv.org/abs/2608.07179">Paper</a>
+  </div>
+</div></nav>
+
+<main>
+<section id="demo" class="demo alone">
+  <div class="stage">Live demo</div>
+  <h1>Try the model</h1>
+  <noscript><p class="noscript">The demo runs in your browser and needs JavaScript.</p></noscript>
+  <p class="lead">The demo runs the calibrations of the paper in your browser. They cover five CPUs and three simulator configurations, measured for the paper. Aneto reads a single run of each workload and never sees the sweep of that workload. Compare its prediction with the ground-truth fit of the sweep, then try other target memories.</p>
+
+  <div class="controls" id="controls">
+    <div class="ctl">
+      <span class="ctl-label">Machine</span>
+      <div class="seg" id="machines" role="group" aria-label="Machine"></div>
+    </div>
+    <div class="ctl">
+      <label class="ctl-label" for="wl">Workload</label>
+      <select id="wl"></select>
+      <button class="small" id="rand" type="button">Random</button>
+    </div>
+    <div class="ctl">
+      <span class="ctl-label">Target memory</span>
+      <div class="seg" id="techs" role="group" aria-label="Target memory"></div>
+      <input id="lat" type="range" min="40" max="1000" step="5" aria-label="Unloaded latency of the target memory (ns)">
+      <output id="lat-out"></output>
+    </div>
+  </div>
+
+  <div class="grid">
+    <figure class="panel">
+      <header><span class="num">1</span><h2>A single run places the workload</h2></header>
+      <div class="legend">
+        <span class="lg"><i class="cbar"></i>BF, low to high</span>
+        <span class="lg"><i class="sw ring"></i>selected</span>
+        <span class="lg"><i class="sw iso"></i>equal BF</span>
+      </div>
+      <div class="plot" id="plot-key"></div>
+      <div class="panel-ctl">
+        <span class="ctl-label">Calibration</span>
+        <div class="seg" id="calib" role="group" aria-label="Calibration">
+          <button type="button" data-v="loo">All other workloads</button>
+          <button type="button" data-v="small">A small set</button>
+        </div>
+        <span id="small-ctl" hidden>
+          <input id="ncal" type="range" min="5" max="40" step="1" value="16" aria-label="Calibration workloads">
+          <output id="ncal-out">16</output> workloads
+          <button class="small" id="redraw" type="button">Draw another set</button>
+        </span>
+      </div>
+      <figcaption>Each dot is a single run of one workload, colored by the BF of its ground-truth fit. Gray lines join points of equal BF from the regression. Click a dot to select the workload.</figcaption>
+    </figure>
+
+    <figure class="panel">
+      <header><span class="num">2</span><h2>From one point to a line</h2></header>
+      <div class="legend">
+        <span class="lg"><i class="sw run"></i>single run</span>
+        <span class="lg"><i class="sw acc"></i>Aneto</span>
+        <span class="lg"><i class="sw pts"></i>sweep points</span>
+        <span class="lg"><i class="sw ref"></i>ground-truth fit</span>
+      </div>
+      <div class="plot" id="plot-line"></div>
+      <figcaption id="cap-line"></figcaption>
+    </figure>
+
+    <figure class="panel">
+      <header><span class="num">3</span><h2>Demand meets supply</h2></header>
+      <div class="legend">
+        <span class="lg"><i class="sw supa"></i>baseline memory</span>
+        <span class="lg"><i class="sw supb"></i>target memory</span>
+        <span class="lg"><i class="sw acc"></i>Aneto</span>
+        <span class="lg"><i class="sw ref"></i>ground-truth fit</span>
+      </div>
+      <div class="plot" id="plot-sd"></div>
+      <div class="panel-ctl">
+        <label class="ctl-label" for="copies">Copies running</label>
+        <input id="copies" type="range" min="1" max="16" step="1" value="1">
+        <output id="copies-out">16</output>
+        <button class="small" id="reset-supply" type="button">Reset curves</button>
+      </div>
+      <figcaption>A supply curve gives the latency of a memory at each bandwidth, while the demand curve gives the bandwidth that the workload draws at each latency and depends on the BF. The prediction is the operating point, where the two curves meet. <b>Drag the handles</b> to change the peak bandwidth of each memory and the latency of the target memory. Add copies of the workload to load the memory. The supply curves are illustrative and do not come from measurements.</figcaption>
+    </figure>
+
+    <section class="panel">
+      <header><span class="num">4</span><h2>Prediction on the target</h2></header>
+      <div id="pred"></div>
+    </section>
+
+    <section class="panel wide">
+      <header><span class="num">5</span><h2>Compare target memories</h2></header>
+      <p>Aneto predicts the CPI of the selected run on each memory, with the copies of panel 3. Edit a row, remove it, or add the target memory of panel 3. A peak bandwidth adds the illustrative supply curve of panel 3. Leave the peak empty to predict from latency only.</p>
+      <div id="cmp"></div>
+      <div class="panel-ctl">
+        <button class="small" id="cmp-add" type="button">Add the target of panel 3</button>
+      </div>
+    </section>
+
+    <figure class="panel">
+      <header><span class="num">6</span><h2>Error grows with latency</h2></header>
+      <div class="plot" id="plot-lat"></div>
+      <figcaption id="cap-lat"></figcaption>
+    </figure>
+
+    <figure class="panel">
+      <header><span class="num">7</span><h2>Error on every machine</h2></header>
+      <div class="plot" id="plot-mach"></div>
+      <figcaption id="cap-mach"></figcaption>
+    </figure>
+
+    <section class="panel wide own">
+      <header><span class="num">8</span><h2>Try your own counters</h2></header>
+      <p>Enter the counters of a single run on the selected machine. Aneto, calibrated on all workloads of that machine, places the run in panel 1 and predicts its CPI on the target memory.</p>
+      <form id="own" autocomplete="off">
+        <label>Cycles <input name="cycles" inputmode="decimal" value="1.2e12"></label>
+        <label>Instructions <input name="instr" inputmode="decimal" value="1.0e12"></label>
+        <label>LLC misses <input name="misses" inputmode="decimal" value="4.0e9"></label>
+        <label>Memory latency (ns) <input name="lat" inputmode="decimal" id="own-lat"></label>
+        <label>Core clock (GHz) <input name="ghz" inputmode="decimal" id="own-ghz"></label>
+        <button type="submit">Predict</button>
+        <button type="button" class="small" id="own-clear">Clear</button>
+      </form>
+      <p class="muted small-note">If you did not measure the memory latency, keep the unloaded latency of the machine. The prediction holds only for runs on the calibrated machine, under the same run conditions (<a href="machines.html">machines</a>).</p>
+    </section>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p>Huawei Technologies, Zurich  |  IEEE/ACM MICRO 2026</p>
+  <p class="muted">&copy; 2026 Huawei Technologies Switzerland AG. All rights reserved. Calibration data: from the aneto-ae artifact, CC-BY-4.0.</p>
+</footer>
+
+</body>
+</html>
